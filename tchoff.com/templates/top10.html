@@ -1,0 +1,49 @@
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tchoff.com</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+    <meta charset="UTF-8">
+    <meta name="description" content="Tchoff.com - Political Social Voting">
+    <meta name="keywords" content="democractic republic, tchoff, tchoff.com, america, usa, political, president">
+    <meta name="author" content="alex.d.fox@icloud.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Tchoff.com!</h1>
+    <h3>Political Social Media for 18+ USA Only!</h3>
+    <h4><a href="https://www.fec.gov/">FEC.gov</a></h4>
+    <h4><a href="https://www.vote.gov/">Vote.gov</a></h4>
+    <h4><a href="/">Tchoff.com</a></h4>
+    <h4><a href="/electoral">Electoral College</a></h4>
+    {% if votes %}
+    <h3>{{votes[0]}}: Top 10</h3>
+    {% for v in votes[1] %}
+            {% if v[0] is iterable %}
+    <table>
+    <tr><th>State</th><th>Top 10</th></tr>
+        <tr><td><a href="/{{v[1][3]}}/">{{v[1][1]}}</a></td><td>
+            <ol>
+            {% for name in v[0] %}
+            <li>
+                <form method="POST" action="/vote/">
+                <input type="hidden" name="state" value="{{v[1][1]}}"></input>
+                <input type="submit" name="name" value="{{name[1]}}"></input>
+                </form>
+            </li>
+            {% endfor %}
+            </ol>
+        </td></tr>
+    </table>
+    {% else %}
+    <table>
+    <tr><th>Candidate</th><th>Votes</th></tr>
+        <tr><td>{{v[1]}}</td><td>{{v[2]}}</td></tr>
+    </table>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</body>
+</html>
