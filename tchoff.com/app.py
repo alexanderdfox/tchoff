@@ -20,13 +20,14 @@ def close(exception):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     cur = get_db().cursor()
-    cur.execute("SELECT * FROM `states` ORDER BY state ASC;")
+    cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
     states = cur.fetchall()
     data = []
     for state in states:
-        cur.execute("SELECT * FROM `"+state[1]+".votes` ORDER BY vote ASC;")
+        table = state[1]+".votes"
+        cur.execute('SELECT * FROM "{}" ORDER BY vote ASC;'.format(table.replace('"', '""')))
         vote = cur.fetchall()
-        cur.execute("SELECT * FROM `"+state[1]+".votes` ORDER BY count DESC LIMIT 1;")
+        cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'.format(table.replace('"', '""')))
         winner = cur.fetchall()
         data.append([state,vote,winner])
     cur.close()
@@ -35,9 +36,9 @@ def index():
 @app.route('/<state>/', methods=['GET', 'POST'])
 def state(state=None):
     cur = get_db().cursor()
-    cur.execute("SELECT * FROM `candidates` ORDER BY name ASC;")
+    cur.execute('SELECT * FROM `candidates` ORDER BY name ASC;')
     candidates = cur.fetchall()
-    cur.execute("SELECT * FROM `states` WHERE abbr = '"+state+"';")
+    cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
     votes = []
     for candidate in candidates:
@@ -51,19 +52,19 @@ def state(state=None):
 def top10(state=None):
     if state:
         cur = get_db().cursor()
-        cur.execute("SELECT * FROM `states` WHERE abbr = '"+state+"';")
+        cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
         stateInfo = cur.fetchall()
-        cur.execute("SELECT * FROM `"+stateInfo[0][1]+".votes` ORDER BY count DESC LIMIT 10;")
+        cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(stateInfo[0][1]+".votes".replace('"', '""')))
         votes = cur.fetchall()
         cur.close()
         votes = [stateInfo[0][1],votes]
     else:
         cur = get_db().cursor()
-        cur.execute("SELECT * FROM `states` ORDER BY state ASC;")
+        cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
         states = cur.fetchall()
         votes = []
         for state in states:
-            cur.execute("SELECT * FROM `"+state[1]+".votes` ORDER BY count DESC LIMIT 10;")
+            cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(state[1]+".votes".replace('"', '""')))
             votes.append([cur.fetchall(),state])
         cur.close()
         votes = ["50 States and D.C.",votes]
@@ -72,16 +73,16 @@ def top10(state=None):
 @app.route('/electoral/', methods=['GET', 'POST'])
 def electoral():
     cur = get_db().cursor()
-    cur.execute("SELECT * FROM `states` ORDER BY state ASC;")
+    cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
     states = cur.fetchall()
     votes = []
     for state in states:
-        cur.execute("SELECT * FROM `"+state[1]+".votes` ORDER BY vote DESC LIMIT 1;")
+        cur.execute('SELECT * FROM "{}" ORDER BY vote DESC LIMIT 1;'.format(state[1]+".votes".replace('"', '""')))
         vote = cur.fetchall()
         if len(vote) != 0:
             print(vote)
             if vote[0][1]:
-                cur.execute("SELECT party FROM candidates WHERE name = ?;", [vote[0][1]])
+                cur.execute('SELECT party FROM candidates WHERE name = ?;', [vote[0][1]])
                 party = cur.fetchall()
             else:
                 party = ""
