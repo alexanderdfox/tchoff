@@ -1,13 +1,11 @@
-<!doctype html>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Tchoff.com</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
+{% extends "base.html" %}
+{% block head %}
+    <title>Tchoff.com - {% if state %}{{state}}{% endif %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
     <meta charset="UTF-8">
     <meta name="description" content="Tchoff.com - Political Social Voting">
-    <meta name="keywords" content="democractic republic, tchoff, tchoff.com, america, usa, political, president">
+    <meta name="keywords" content="democract, republican, tchoff, tchoff.com, america, usa, political, president">
     <meta name="author" content="alex.d.fox@icloud.com">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
@@ -19,19 +17,21 @@
               fill: blue !important;
             {% elif v[2][0][0] == "REP" %}
               fill: red !important;
-            {% elif v[2][0][0] != "DEM" or v[2][0][0] != "REP" %}
-              fill: green !important;
+            {% else %}
+              fill: purple !important;
             {% endif %}
             {% endif %}
           }
           #{{v[0][3]}}:hover {
             fill: orange !important;
+            stroke: black !important;
+            stroke-width: 3px !important;
           }
         {% endfor %}
       {% endif %}
     </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
     <h1>Tchoff.com!</h1>
     <h3>Political Social Media for 18+ USA Only!</h3>
     <h4><a href="https://www.fec.gov/">FEC.gov</a></h4>
@@ -354,5 +354,4 @@
           </g>
         </svg>
     </div>
-</body>
-</html>
+{% endblock %}

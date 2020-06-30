@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %} - {% if state %}{{state}}{% endif %}{% endblock %}
+{% block content %}
+    <h1>Tchoff.com!</h1>
+    <h3>Political Social Media for 18+ USA Only!</h3>
+    <h4><a href="https://www.fec.gov/">FEC.gov</a></h4>
+    <h4><a href="https://www.vote.gov/">Vote.gov</a></h4>
+    <h4><a href="/">Tchoff.com</a></h4>
+    <h4><a href="/electoral">Electoral College</a></h4>
+    <h4><a href="/top10">Top 10</a></h4>
+    <table>
+    <tr><th>Name</th><th>Popular Votes</th><th>Electoral College</th></tr>
+        {% if electoral %}
+        {% for elec in electoral %}
+    	<tr><td>{{elec[0][1]}}</td><td>{{elec[1]}}</td><td>{{elec[2]}}</td></tr>
+        {% endfor %}
+        {% endif %}
+    </table>
+{% endblock %}

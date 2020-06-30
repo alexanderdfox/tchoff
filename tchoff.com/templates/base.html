@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+	<title>Tchoff.com{% block title %}{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+    <meta charset="UTF-8">
+    <meta name="description" content="Tchoff.com - Political Social Voting">
+    <meta name="keywords" content="democract, republican, tchoff, tchoff.com, america, usa, political, president">
+    <meta name="author" content="alex.d.fox@icloud.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+</body>
+</html>

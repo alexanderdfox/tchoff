@@ -1,3 +1,6 @@
+* {
+	transition: all .5s ease-out .5s;
+}
 body {
 	background: linear-gradient(to left, #b22234 50%, #3c3b6e 50%);
     text-align: center;

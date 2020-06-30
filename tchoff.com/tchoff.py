@@ -1,4 +1,4 @@
-import sqlite3, array
+import sqlite3, array, re
 from flask import Flask, escape, request, render_template, g
 
 DATABASE = '2024.db'
@@ -106,6 +106,26 @@ def vote():
     get_db().commit()
     cur.close()
     return render_template('vote.html',votedFor=name,votedIn=state)
+
+@app.route('/winning/', methods=['GET', 'POST'])
+def winning():
+    cur = get_db().cursor()
+    cur.execute('SELECT * FROM `candidates`;')
+    candidates = cur.fetchall()
+    cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
+    states = cur.fetchall()
+    electoral = []
+    for state in states:
+        for candidate in candidates:
+            cur.execute('SELECT * FROM "{}" WHERE vote = ? ORDER BY count DESC LIMIT 1'.format(state[1]+'.votes'.replace('"', '""')), [candidate[1]])
+            count = 0
+            elec = 0
+            for votes in cur.fetchall():
+                count += votes[2]
+                elec = state[2]
+            electoral.append([candidate, count, elec, state])
+    electoral.sort(key=lambda x:x[1], reverse=True)
+    return render_template('winning.html',electoral=electoral)
 
 @app.errorhandler(403)
 @app.errorhandler(404)
