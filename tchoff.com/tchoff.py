@@ -17,12 +17,12 @@ def close(exception):
         db.close()
 
 
-@app.route("/")
+@app.route("/", subdomain="static")
 def index():
     return render_template('index.html')
 
 
-@app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/dynamic', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain):
     print(subdomain)
     subdomain = subdomain + '.db'
@@ -45,7 +45,7 @@ def year(subdomain):
     return render_template('year.html', data=data)
 
 
-@app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/dynamic/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def state(state=None, subdomain):
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
@@ -62,8 +62,8 @@ def state(state=None, subdomain):
     return render_template('state.html', state=stateInfo[0][1], votes=votes, abbr=stateInfo[0][3])
 
 
-@app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
-@app.route('/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/dynamic/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/dynamic/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def top10(state=None, subdomain):
     subdomain = subdomain + '.db'
     if state:
@@ -89,7 +89,7 @@ def top10(state=None, subdomain):
     return render_template('top10.html', votes=votes)
 
 
-@app.route('/electoral/', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/dynamic/electoral/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def electoral(subdomain):
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
@@ -114,7 +114,7 @@ def electoral(subdomain):
     return render_template('electoral.html', votes=votes)
 
 
-@app.route('/vote/', methods=['POST', 'GET'], subdomain)
+@app.route('/dynamic/vote/', methods=['POST', 'GET'], subdomain)
 def vote(subdomain="<subdomain>"):
     subdomain = subdomain + '.db'
     name = request.form['name']
@@ -134,7 +134,7 @@ def vote(subdomain="<subdomain>"):
 
 
 # BROKEN!
-# @app.route('/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
+# @app.route('/dynamic/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
 # def winning(subdomain):
 #     cur = get_db(subdomain).cursor()
 #     cur.execute('SELECT * FROM `candidates`;')
