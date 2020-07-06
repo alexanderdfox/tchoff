@@ -2,7 +2,7 @@ import sqlite3
 from flask import Flask, request, render_template, g
 
 app = Flask(__name__, static_url_path='/static', subdomain_matching=True)
-app.config['SERVER_NAME'] = "tchoff.com"
+app.config['SERVER_NAME'] = "tchoff:443"
 
 def get_db(DATABASE):
     db = getattr(g, '_database', None)
@@ -18,15 +18,13 @@ def close(exception):
         db.close()
 
 
-@app.route("/", subdomain="<subdomain>")
-def index(subdomain):
-    print(subdomain)
+@app.route("/")
+def index():
     return render_template('index.html')
 
 
-@app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/vote', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
-    print(subdomain)
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
