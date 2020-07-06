@@ -5,6 +5,8 @@ app = Flask(__name__, subdomain_matching=True)
 app.config['SERVER_NAME'] = "tchoff.com"
 
 
+folder = "/var/www/tchoff/tchoff.com/databases/"
+
 def get_db(DATABASE):
     db = getattr(g, '_database', None)
     if db is None:
@@ -32,7 +34,7 @@ def index():
 
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
-    subdomain = "databases/" + subdomain + '.db'
+    subdomain = folder + subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
     states = cur.fetchall()
@@ -54,7 +56,7 @@ def year(subdomain=None):
 
 @app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def state(state=None, subdomain=None):
-    subdomain = "databases/" + subdomain + '.db'
+    subdomain = folder + subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `candidates` ORDER BY name ASC;')
     candidates = cur.fetchall()
@@ -72,7 +74,7 @@ def state(state=None, subdomain=None):
 @app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
 @app.route('/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def top10(state=None, subdomain=None):
-    subdomain = "databases/" + subdomain + '.db'
+    subdomain = folder + subdomain + '.db'
     if state:
         cur = get_db(subdomain).cursor()
         cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
@@ -98,7 +100,7 @@ def top10(state=None, subdomain=None):
 
 @app.route('/electoral/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def electoral(subdomain=None):
-    subdomain = "databases/" + subdomain + '.db'
+    subdomain = folder + subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
     states = cur.fetchall()
@@ -123,7 +125,7 @@ def electoral(subdomain=None):
 
 @app.route('/vote/', methods=['POST', 'GET'], subdomain=None)
 def vote(subdomain="<subdomain>"):
-    subdomain = "databases/" + subdomain + '.db'
+    subdomain = folder + subdomain + '.db'
     name = request.form['name']
     state = request.form['state']
     cur = get_db(subdomain).cursor()
@@ -143,7 +145,7 @@ def vote(subdomain="<subdomain>"):
 # BROKEN!
 # @app.route('/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
 # def winning(subdomain=None):
-#     subdomain = "databases/" + subdomain + '.db'
+#     subdomain = folder + subdomain + '.db'
 #     cur = get_db(subdomain).cursor()
 #     cur.execute('SELECT * FROM `candidates`;')
 #     candidates = cur.fetchall()
