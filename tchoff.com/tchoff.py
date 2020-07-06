@@ -2,7 +2,7 @@ import sqlite3
 from flask import Flask, request, render_template, g
 
 app = Flask(__name__, static_url_path='/static', subdomain_matching=True)
-app.config['SERVER_NAME'] = "tchoff.com:443"
+app.config['SERVER_NAME'] = "tchoff.com:80"
 
 def get_db(DATABASE):
     db = getattr(g, '_database', None)
