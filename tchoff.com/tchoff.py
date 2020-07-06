@@ -90,11 +90,10 @@ def electoral():
     states = cur.fetchall()
     votes = []
     for state in states:
-        cur.execute('SELECT * FROM "{}" ORDER BY vote DESC LIMIT 1;'.format(
+        cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'.format(
             state[1] + ".votes".replace('"', '""')))
         vote = cur.fetchall()
         if len(vote) != 0:
-            print(vote)
             if vote[0][1]:
                 cur.execute(
                     'SELECT party FROM candidates WHERE name = ?;', [vote[0][1]])
@@ -103,7 +102,6 @@ def electoral():
                 party = ""
         else:
             party = ""
-        print(party)
         votes.append([state, vote, party])
     cur.close()
     return render_template('electoral.html', votes=votes)
@@ -126,29 +124,28 @@ def vote():
     cur.close()
     return render_template('vote.html', votedFor=name, votedIn=state)
 
+
 # BROKEN!
-
-
-# @app.route('/winning/', methods=['GET', 'POST'])
-# def winning():
-#     cur = get_db().cursor()
-#     cur.execute('SELECT * FROM `candidates`;')
-#     candidates = cur.fetchall()
-#     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
-#     states = cur.fetchall()
-#     electoral = []
-#     for state in states:
-#         for candidate in candidates:
-#             cur.execute('SELECT * FROM "{}" WHERE vote = ? ORDER BY count DESC LIMIT 1'.format(
-#                 state[1] + '.votes'.replace('"', '""')), [candidate[1]])
-#             count = 0
-#             elec = 0
-#             for votes in cur.fetchall():
-#                 count += votes[2]
-#                 elec = state[2]
-#             electoral.append([candidate, count, elec, state])
-#     electoral.sort(key=lambda x: x[1], reverse=True)
-#     return render_template('winning.html', electoral=electoral)
+@app.route('/winning/', methods=['GET', 'POST'])
+def winning():
+    cur = get_db().cursor()
+    cur.execute('SELECT * FROM `candidates`;')
+    candidates = cur.fetchall()
+    cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
+    states = cur.fetchall()
+    electoral = []
+    for state in states:
+        for candidate in candidates:
+            cur.execute('SELECT * FROM "{}" WHERE vote = ? ORDER BY count DESC LIMIT 1'.format(
+                state[1] + '.votes'.replace('"', '""')), [candidate[1]])
+            count = 0
+            elec = 0
+            for votes in cur.fetchall():
+                count += votes[2]
+                elec = state[2]
+            electoral.append([candidate, count, elec, state])
+    electoral.sort(key=lambda x: x[1], reverse=True)
+    return render_template('winning.html', electoral=electoral)
 # BROKEN!
 
 

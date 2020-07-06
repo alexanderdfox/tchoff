@@ -13,13 +13,15 @@
         {% for v in votes %}
           #{{v[0][3]}} {
             {% if v[2] %}
-            {% if v[2][0][0] == "DEM" %}
-              fill: blue !important;
-            {% elif v[2][0][0] == "REP" %}
-              fill: red !important;
-            {% else %}
-              fill: purple !important;
-            {% endif %}
+              {% if v[2][0][0] %}
+                {% if v[2][0][0] == 'DEM' %}
+                  fill: blue !important;
+                {% elif v[2][0][0] == 'REP' %}
+                  fill: red !important;
+                {% else %}
+                  fill: purple !important;
+                {% endif %}
+              {% endif %}
             {% endif %}
           }
           #{{v[0][3]}}:hover {
