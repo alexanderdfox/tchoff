@@ -1,7 +1,8 @@
 import sqlite3
 from flask import Flask, request, render_template, g
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path='/static', subdomain_matching=True)
+app.config['SERVER_NAME'] = "tchoff.com"
 
 def get_db(DATABASE):
     db = getattr(g, '_database', None)
@@ -17,13 +18,14 @@ def close(exception):
         db.close()
 
 
-@app.route("/", subdomain="static")
-def index():
+@app.route("/", subdomain="<subdomain>")
+def index(subdomain):
+    print(subdomain)
     return render_template('index.html')
 
 
-@app.route('/dynamic', methods=['GET', 'POST'], subdomain="<subdomain>")
-def year(subdomain):
+@app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
+def year(subdomain=None):
     print(subdomain)
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
@@ -45,8 +47,8 @@ def year(subdomain):
     return render_template('year.html', data=data)
 
 
-@app.route('/dynamic/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def state(state=None, subdomain):
+@app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
+def state(state=None, subdomain=None):
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `candidates` ORDER BY name ASC;')
@@ -62,9 +64,9 @@ def state(state=None, subdomain):
     return render_template('state.html', state=stateInfo[0][1], votes=votes, abbr=stateInfo[0][3])
 
 
-@app.route('/dynamic/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
-@app.route('/dynamic/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def top10(state=None, subdomain):
+@app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
+def top10(state=None, subdomain=None):
     subdomain = subdomain + '.db'
     if state:
         cur = get_db(subdomain).cursor()
@@ -89,8 +91,8 @@ def top10(state=None, subdomain):
     return render_template('top10.html', votes=votes)
 
 
-@app.route('/dynamic/electoral/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def electoral(subdomain):
+@app.route('/electoral/', methods=['GET', 'POST'], subdomain="<subdomain>")
+def electoral(subdomain=None):
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
@@ -114,7 +116,7 @@ def electoral(subdomain):
     return render_template('electoral.html', votes=votes)
 
 
-@app.route('/dynamic/vote/', methods=['POST', 'GET'], subdomain)
+@app.route('/vote/', methods=['POST', 'GET'], subdomain=None)
 def vote(subdomain="<subdomain>"):
     subdomain = subdomain + '.db'
     name = request.form['name']
@@ -134,8 +136,8 @@ def vote(subdomain="<subdomain>"):
 
 
 # BROKEN!
-# @app.route('/dynamic/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
-# def winning(subdomain):
+# @app.route('/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
+# def winning(subdomain=None):
 #     cur = get_db(subdomain).cursor()
 #     cur.execute('SELECT * FROM `candidates`;')
 #     candidates = cur.fetchall()
