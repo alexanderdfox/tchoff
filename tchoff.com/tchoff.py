@@ -18,26 +18,25 @@ def close(exception):
 
 
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def index(subdomain=None):
-    return subdomain
-    # subdomain = subdomain + '.db'
-    # cur = get_db(subdomain).cursor()
-    # cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
-    # states = cur.fetchall()
-    # data = []
-    # for state in states:
-    #     table = state[1] + ".votes"
-    #     cur.execute(
-    #         'SELECT * FROM "{}" ORDER BY vote ASC;'
-    #         .format(table.replace('"', '""')))
-    #     vote = cur.fetchall()
-    #     cur.execute(
-    #         'SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'
-    #         .format(table.replace('"', '""')))
-    #     winner = cur.fetchall()
-    #     data.append([state, vote, winner])
-    # cur.close()
-    # return render_template('year.html', data=data)
+def index(subdomain=subdomain):
+    subdomain = subdomain + '.db'
+    cur = get_db(subdomain).cursor()
+    cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
+    states = cur.fetchall()
+    data = []
+    for state in states:
+        table = state[1] + ".votes"
+        cur.execute(
+            'SELECT * FROM "{}" ORDER BY vote ASC;'
+            .format(table.replace('"', '""')))
+        vote = cur.fetchall()
+        cur.execute(
+            'SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'
+            .format(table.replace('"', '""')))
+        winner = cur.fetchall()
+        data.append([state, vote, winner])
+    cur.close()
+    return render_template('year.html', data=data)
 
 
 @app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
