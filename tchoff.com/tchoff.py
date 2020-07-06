@@ -5,9 +5,6 @@ app = Flask(__name__, subdomain_matching=True)
 app.config['SERVER_NAME'] = "tchoff.com"
 
 
-folder = "/var/www/tchoff/tchoff.com/databases/"
-
-
 def get_db(DATABASE):
     db = getattr(g, '_database', None)
     if db is None:
@@ -25,7 +22,8 @@ def close(exception):
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     root_dir = os.path.dirname(os.getcwd())
-    return send_from_directory(os.path.join(root_dir, 'static', 'databases'), filename)
+    folder = "/var/www/tchoff/tchoff.com/"
+    return send_from_directory(os.path.join(folder, 'static', 'databases'), filename)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -35,27 +33,27 @@ def index():
 
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
-    if subdomain == "www"
+    if subdomain != "www"
+        subdomain = folder + subdomain + '.db'
+        cur = get_db(subdomain).cursor()
+        cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
+        states = cur.fetchall()
+        data = []
+        for state in states:
+            table = state[1] + ".votes"
+            cur.execute(
+                'SELECT * FROM "{}" ORDER BY vote ASC;'
+                .format(table.replace('"', '""')))
+            vote = cur.fetchall()
+            cur.execute(
+                'SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'
+                .format(table.replace('"', '""')))
+            winner = cur.fetchall()
+            data.append([state, vote, winner])
+        cur.close()
+        return render_template('year.html', data=data)
+    else:
         return render_template('index.html')
-    subdomain = folder + subdomain + '.db'
-    cur = get_db(subdomain).cursor()
-    cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
-    states = cur.fetchall()
-    data = []
-    for state in states:
-        table = state[1] + ".votes"
-        cur.execute(
-            'SELECT * FROM "{}" ORDER BY vote ASC;'
-            .format(table.replace('"', '""')))
-        vote = cur.fetchall()
-        cur.execute(
-            'SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'
-            .format(table.replace('"', '""')))
-        winner = cur.fetchall()
-        data.append([state, vote, winner])
-    cur.close()
-    return render_template('year.html', data=data)
-
 
 @app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def state(state=None, subdomain=None):
