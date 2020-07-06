@@ -1,8 +1,7 @@
 import sqlite3
-import os
 from flask import Flask, request, render_template, g
 
-DATABASE = os.getcwd() + '/2024.db'
+DATABASE = '/var/www/tchoff/tchoff.com/2024.db'
 
 app = Flask(__name__, static_url_path='/static')
 
