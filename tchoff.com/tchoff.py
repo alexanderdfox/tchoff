@@ -7,6 +7,7 @@ app.config['SERVER_NAME'] = "tchoff.com"
 
 folder = "/var/www/tchoff/tchoff.com/databases/"
 
+
 def get_db(DATABASE):
     db = getattr(g, '_database', None)
     if db is None:
@@ -34,6 +35,8 @@ def index():
 
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
+    if subdomain == "www"
+        return render_template('index.html')
     subdomain = folder + subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
