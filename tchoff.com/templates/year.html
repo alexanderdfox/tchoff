@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %} - Pick Your State{% endblock %}
+{% block content %}
+    <h1>Tchoff.com!</h1>
+    <h3>Political Social Media for 18+ USA Only!</h3>
+    <h4><a href="https://www.fec.gov/">FEC.gov</a></h4>
+    <h4><a href="https://www.vote.gov/">Vote.gov</a></h4>
+    <h4><a href="/">Tchoff.com</a></h4>
+    <h4><a href="/electoral">Electoral College</a></h4>
+    <h4><a href="/top10">Top 10</a></h4>
+    <table>
+    <tr><th>State</th><th>Electoral College</th><th>Abbreviation</th><th>Winning</th></tr>
+    {% if data %}
+    	{% for d in data %}
+            <tr><td><a href="{{d[0][3]}}/">{{d[0][1]}}</a></td><td>{{d[0][2]}}</td><td>{{d[0][3]}}</td><td>
+            {% if d[2] %}
+                {{d[2][0][1]}}
+            {% endif %}</td></tr>
+    	{% endfor %}
+    {% endif %}
+    </table>
+{% endblock %}
