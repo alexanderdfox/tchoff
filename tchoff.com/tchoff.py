@@ -23,7 +23,7 @@ def index():
 
 
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def year(subdomain=None):
+def year(subdomain):
     print(subdomain)
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
@@ -46,7 +46,7 @@ def year(subdomain=None):
 
 
 @app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def state(state=None, subdomain=None):
+def state(state=None, subdomain):
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `candidates` ORDER BY name ASC;')
@@ -64,7 +64,7 @@ def state(state=None, subdomain=None):
 
 @app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
 @app.route('/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def top10(state=None, subdomain=None):
+def top10(state=None, subdomain):
     subdomain = subdomain + '.db'
     if state:
         cur = get_db(subdomain).cursor()
@@ -90,7 +90,7 @@ def top10(state=None, subdomain=None):
 
 
 @app.route('/electoral/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def electoral(subdomain=None):
+def electoral(subdomain):
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
@@ -114,7 +114,7 @@ def electoral(subdomain=None):
     return render_template('electoral.html', votes=votes)
 
 
-@app.route('/vote/', methods=['POST', 'GET'], subdomain=None)
+@app.route('/vote/', methods=['POST', 'GET'], subdomain)
 def vote(subdomain="<subdomain>"):
     subdomain = subdomain + '.db'
     name = request.form['name']
@@ -135,7 +135,7 @@ def vote(subdomain="<subdomain>"):
 
 # BROKEN!
 # @app.route('/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
-# def winning(subdomain=None):
+# def winning(subdomain):
 #     cur = get_db(subdomain).cursor()
 #     cur.execute('SELECT * FROM `candidates`;')
 #     candidates = cur.fetchall()
