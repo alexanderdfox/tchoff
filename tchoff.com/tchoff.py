@@ -18,12 +18,11 @@ def close(exception):
         db.close()
 
 
-@app.route("/")
+@app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
-
-@app.route('/vote', methods=['GET', 'POST'], subdomain="<subdomain>")
+@app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
