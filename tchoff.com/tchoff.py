@@ -17,13 +17,10 @@ def close(exception):
         db.close()
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    return render_template('index.html')
-
-
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
+    if subdomain == 'www':
+        return render_template('index.html', data=data)
     subdomain = subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
