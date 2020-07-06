@@ -18,7 +18,7 @@ def close(exception):
 
 
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
-def year(subdomain=None):
+def index(subdomain=None):
     return subdomain
     # subdomain = subdomain + '.db'
     # cur = get_db(subdomain).cursor()
