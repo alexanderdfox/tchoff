@@ -2,7 +2,7 @@ import sqlite3
 from flask import Flask, request, render_template, g, send_from_directory
 
 app = Flask(__name__, subdomain_matching=True)
-app.config['SERVER_NAME'] = "tchoff.com"
+app.config['SERVER_NAME'] = "localhost:8000"
 
 
 def get_db(DATABASE):
@@ -21,8 +21,8 @@ def close(exception):
 
 @app.route('/static/<path:filename>')
 def serve_databases(filename):
-    root_dir = '/var/www/tchoff/tchoff.com/'
-    return send_from_directory(os.path.join(root_dir, 'static', 'databases'), filename)
+    root_dir = os.path.dirname(os.getcwd())
+    return send_from_directory(os.path.join(app.instance_path, 'static', 'databases'), filename)
 
 
 @app.route('/', methods=['GET', 'POST'])
