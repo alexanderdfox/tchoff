@@ -19,10 +19,10 @@ def close(exception):
         db.close()
 
 
-@app.route('/databases/<path:filename>')
+@app.route('/static/<path:filename>')
 def serve_databases(filename):
     root_dir = '/var/www/tchoff/tchoff.com/'
-    return send_from_directory(os.path.join(root_dir, 'databases', 'databases'), filename)
+    return send_from_directory(os.path.join(root_dir, 'static', 'databases'), filename)
 
 
 @app.route('/', methods=['GET', 'POST'])
