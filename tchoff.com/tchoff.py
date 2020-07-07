@@ -39,7 +39,6 @@ def year(subdomain=None):
         cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
         states = cur.fetchall()
         data = []
-        totalVotes = 0
         for state in states:
             table = state[1] + ".votes"
             cur.execute(
@@ -50,14 +49,9 @@ def year(subdomain=None):
                 'SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'
                 .format(table.replace('"', '""')))
             winner = cur.fetchall()
-            cur.execute(
-                'SELECT SUM(count) FROM "{}";'
-                .format(table.replace('"', '""')))
-            totalVotes += cur.fetchall()[0][0]
             data.append([state, vote, winner])
-
         cur.close()
-        return render_template('year.html', data=data, totalVotes=totalVotes)
+        return render_template('year.html', data=data)
     else:
         return render_template('index.html')
 
@@ -156,7 +150,7 @@ def vote(subdomain="<subdomain>"):
 
 # BROKEN!
 # @app.route('/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
-# def winning(subdomain=None):
+# def winning(subdomain="<subdomain>"):
 #     subdomain = path + subdomain + '.db'
 #     cur = get_db(subdomain).cursor()
 #     cur.execute('SELECT * FROM `candidates`;')
