@@ -1,8 +1,10 @@
-import sqlite3
+import sqlite3, os
 from flask import Flask, request, render_template, g, send_from_directory
 
 app = Flask(__name__, subdomain_matching=True)
-app.config['SERVER_NAME'] = "localhost:8000"
+app.config['SERVER_NAME'] = "tchoff.com"
+path = os.path.join(os.path.dirname(os.getcwd()), 'tchoff.com/static/databases/')
+
 
 
 def get_db(DATABASE):
@@ -33,7 +35,7 @@ def index():
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
     if subdomain != "www":
-        subdomain = 'static/databases/' + subdomain + '.db'
+        subdomain = path + subdomain + '.db'
         cur = get_db(subdomain).cursor()
         cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
         states = cur.fetchall()
@@ -57,7 +59,7 @@ def year(subdomain=None):
 
 @app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def state(state=None, subdomain=None):
-    subdomain = 'static/databases/' + subdomain + '.db'
+    subdomain = path + subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `candidates` ORDER BY name ASC;')
     candidates = cur.fetchall()
@@ -75,7 +77,7 @@ def state(state=None, subdomain=None):
 @app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
 @app.route('/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def top10(state=None, subdomain=None):
-    subdomain = 'static/databases/' + subdomain + '.db'
+    subdomain = path + subdomain + '.db'
     if state:
         cur = get_db(subdomain).cursor()
         cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
@@ -86,7 +88,7 @@ def top10(state=None, subdomain=None):
         cur.close()
         votes = [stateInfo[0][1], votes]
     else:
-        cur = get_db().cursor()
+        cur = get_db(subdomain).cursor()
         cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
         states = cur.fetchall()
         votes = []
@@ -101,7 +103,7 @@ def top10(state=None, subdomain=None):
 
 @app.route('/electoral/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def electoral(subdomain=None):
-    subdomain = 'static/databases/' + subdomain + '.db'
+    subdomain = path + subdomain + '.db'
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
     states = cur.fetchall()
@@ -126,7 +128,7 @@ def electoral(subdomain=None):
 
 @app.route('/vote/', methods=['POST', 'GET'], subdomain=None)
 def vote(subdomain="<subdomain>"):
-    subdomain = 'static/databases/' + subdomain + '.db'
+    subdomain = path + subdomain + '.db'
     name = request.form['name']
     state = request.form['state']
     cur = get_db(subdomain).cursor()
@@ -146,7 +148,7 @@ def vote(subdomain="<subdomain>"):
 # BROKEN!
 # @app.route('/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
 # def winning(subdomain=None):
-#     subdomain = 'static/databases/' + subdomain + '.db'
+#     subdomain = path + subdomain + '.db'
 #     cur = get_db(subdomain).cursor()
 #     cur.execute('SELECT * FROM `candidates`;')
 #     candidates = cur.fetchall()
@@ -173,5 +175,4 @@ def vote(subdomain="<subdomain>"):
 @app.errorhandler(410)
 @app.errorhandler(500)
 def errorPage(e):
-    print(app.instance_path)
     return render_template('error.html', error=e)
