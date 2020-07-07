@@ -39,6 +39,7 @@ def year(subdomain=None):
         cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
         states = cur.fetchall()
         data = []
+        totalVotes = 0
         for state in states:
             table = state[1] + ".votes"
             cur.execute(
@@ -49,9 +50,14 @@ def year(subdomain=None):
                 'SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'
                 .format(table.replace('"', '""')))
             winner = cur.fetchall()
+            cur.execute(
+                'SELECT SUM(count) FROM "{}";'
+                .format(table.replace('"', '""')))
+            totalVotes += cur.fetchall()[0][0]
             data.append([state, vote, winner])
+
         cur.close()
-        return render_template('year.html', data=data)
+        return render_template('year.html', data=data, totalVotes=totalVotes)
     else:
         return render_template('index.html')
 
@@ -64,13 +70,17 @@ def state(state=None, subdomain=None):
     candidates = cur.fetchall()
     cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
+    cur.execute(
+                'SELECT SUM(count) FROM "{}";'
+                .format(stateInfo[0][1] + ".votes".replace('"', '""')))
+    totalVotes = cur.fetchall()[0][0]
     votes = []
     for candidate in candidates:
         cur.execute('SELECT * FROM "{}" WHERE vote = ?;'.format(
             stateInfo[0][1] + ".votes".replace('"', '""')), [candidate[1]])
         votes.append([candidate, cur.fetchall()])
     cur.close()
-    return render_template('state.html', state=stateInfo[0][1], votes=votes, abbr=stateInfo[0][3])
+    return render_template('state.html', state=stateInfo[0][1], votes=votes, abbr=stateInfo[0][3], totalVotes=totalVotes)
 
 
 @app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
