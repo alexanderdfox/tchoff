@@ -21,8 +21,8 @@ def close(exception):
 
 @app.route('/static/<path:filename>')
 def serve_databases(filename):
-    root_dir = os.path.dirname(os.getcwd())
-    return send_from_directory(os.path.join(app.instance_path, 'static', 'databases'), filename)
+    root_dir = os.path.dirname(app.instance_path)
+    return send_from_directory(os.path.join(root_dir, 'static', 'databases'), filename)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -172,4 +172,5 @@ def vote(subdomain="<subdomain>"):
 @app.errorhandler(410)
 @app.errorhandler(500)
 def errorPage(e):
+    print(app.instance_path)
     return render_template('error.html', error=e)
