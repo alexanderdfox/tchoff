@@ -3,8 +3,7 @@ from flask import Flask, request, render_template, g, send_from_directory
 
 app = Flask(__name__, subdomain_matching=True)
 app.config['SERVER_NAME'] = "tchoff.com"
-path = os.path.join(os.path.dirname(os.getcwd()), 'tchoff.com/static/databases/')
-
+path = '/var/www/tchoff/tchoff.com/static/databases/'
 
 
 def get_db(DATABASE):
@@ -126,7 +125,7 @@ def electoral(subdomain=None):
     return render_template('electoral.html', votes=votes)
 
 
-@app.route('/vote/', methods=['POST', 'GET'], subdomain=None)
+@app.route('/vote/', methods=['POST', 'GET'], subdomain="<subdomain>")
 def vote(subdomain="<subdomain>"):
     subdomain = path + subdomain + '.db'
     name = request.form['name']
@@ -140,7 +139,7 @@ def vote(subdomain="<subdomain>"):
     else:
         cur.execute('INSERT INTO "{}" (vote,count) VALUES (?, 1);'.format(
             state + '.votes'.replace('"', '""')), [name])
-    get_db().commit()
+    get_db(subdomain).commit()
     cur.close()
     return render_template('vote.html', votedFor=name, votedIn=state)
 
