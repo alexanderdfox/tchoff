@@ -16,7 +16,7 @@
         {% for v in votes %}
         <form method="POST" action="/vote/">
             <input type="hidden" name="state" value="{{state}}"></input>
-            <tr><td><input type="submit" name="name" value="{{v[0][1]}}"></input></td><td>{{v[0][2]}}</td><td>{% if v[1][0] %}{{v[1][0][2]}}{% else %}0{% endif %}</td></tr>
+            <tr><td><button type="submit" name="name" value="{{v[0][1]}}">{{v[0][1]}}</button></td><td>{{v[0][2]}}</td><td>{% if v[1][0] %}{{v[1][0][2]}}{% else %}0{% endif %}</td></tr>
         </form>
         {% endfor %}
     {% endif %}
