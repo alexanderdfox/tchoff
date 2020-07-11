@@ -1,4 +1,5 @@
-import sqlite3, os
+import sqlite3
+import os
 from flask import Flask, request, render_template, g, send_from_directory
 
 app = Flask(__name__, subdomain_matching=True)
@@ -39,6 +40,7 @@ def year(subdomain=None):
         cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
         states = cur.fetchall()
         data = []
+        totalVotes = 0
         for state in states:
             table = state[1] + ".votes"
             cur.execute(
@@ -50,8 +52,11 @@ def year(subdomain=None):
                 .format(table.replace('"', '""')))
             winner = cur.fetchall()
             data.append([state, vote, winner])
+            count = cur.execute('SELECT sum(count) FROM "{}";'.format(table.replace('"', '""'))).fetchall()
+            if count[0][0] != None:
+                totalVotes += count[0][0]
         cur.close()
-        return render_template('year.html', data=data)
+        return render_template('year.html', data=data, totalVotes=totalVotes)
     else:
         return render_template('index.html')
 
@@ -65,8 +70,8 @@ def state(state=None, subdomain=None):
     cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
     cur.execute(
-                'SELECT SUM(count) FROM "{}";'
-                .format(stateInfo[0][1] + ".votes".replace('"', '""')))
+        'SELECT SUM(count) FROM "{}";'
+        .format(stateInfo[0][1] + ".votes".replace('"', '""')))
     totalVotes = cur.fetchall()[0][0]
     votes = []
     for candidate in candidates:
