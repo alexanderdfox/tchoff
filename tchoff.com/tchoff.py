@@ -52,7 +52,8 @@ def year(subdomain=None):
                 .format(table.replace('"', '""')))
             winner = cur.fetchall()
             data.append([state, vote, winner])
-            count = cur.execute('SELECT sum(count) FROM "{}";'.format(table.replace('"', '""'))).fetchall()
+            count = cur.execute('SELECT sum(count) FROM "{}";'.format(
+                table.replace('"', '""'))).fetchall()
             if count[0][0] != None:
                 totalVotes += count[0][0]
         cur.close()
@@ -176,6 +177,11 @@ def vote(subdomain="<subdomain>"):
 #     electoral.sort(key=lambda x: x[1], reverse=True)
 #     return render_template('winning.html', electoral=electoral)
 # BROKEN!
+
+
+@app.route('/privacy/', methods=['POST', 'GET'])
+def privacy():
+    return render_template('privacy.html')
 
 
 @app.errorhandler(403)

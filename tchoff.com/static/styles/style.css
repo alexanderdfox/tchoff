@@ -76,3 +76,7 @@ h1, h2, h3 {
 path:hover {
     fill: orange !important;
 }
+.footer {
+	position: absolute;
+	top: 85vmax;
+}
