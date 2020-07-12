@@ -41,7 +41,7 @@ a, input, button {
 	text-decoration: none;
 	padding: 3px;
 	box-shadow: 2.5px 5px black;
-	cursor: url(/images/check.png),auto;
+	cursor: url(../images/check.png),auto;
 	text-size: 24pt;
 	line-height: 35px;
 }
@@ -77,6 +77,6 @@ path:hover {
     fill: orange !important;
 }
 .footer {
-	position: absolute;
+	position: static;
 	top: 85vmax;
 }
