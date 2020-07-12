@@ -179,8 +179,9 @@ def vote(subdomain="<subdomain>"):
 # BROKEN!
 
 
-@app.route('/privacy/', methods=['POST', 'GET'])
-def privacy():
+@app.route('/privacy/', methods=['POST', 'GET'], subdomain="<subdomain>")
+def privacy(subdomain="<subdomain>"):
+    print(subdomain)
     return render_template('privacy.html')
 
 
