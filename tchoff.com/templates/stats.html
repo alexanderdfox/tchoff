@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %} - Stats{% endblock %}
+{% block content %}
+    <h1>Tchoff.com!</h1>
+    <h3>Political Social Media for 18+ USA Only!</h3>
+    <h4><a href="https://www.fec.gov/">FEC.gov</a></h4>
+    <h4><a href="https://www.vote.gov/">Vote.gov</a></h4>
+    <h4><a href="/">Tchoff.com</a></h4>
+    <h4><a href="https://2020.tchoff.com/">2020</a></h4>
+    <h4><a href="https://2024.tchoff.com/">2024</a></h4>
+    {% if stats %}
+        {% for state in stats %}
+            {% for stat in state %}
+                {% for s in stat %}
+                    <h3>{{s}}</h3>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}

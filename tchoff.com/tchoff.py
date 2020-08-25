@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import statistics
 from flask import Flask, request, render_template, g, send_from_directory
 
 app = Flask(__name__, subdomain_matching=True)
@@ -177,6 +178,21 @@ def vote(subdomain="<subdomain>"):
 #     electoral.sort(key=lambda x: x[1], reverse=True)
 #     return render_template('winning.html', electoral=electoral)
 # BROKEN!
+
+# @app.route('/stats/', methods=['POST', 'GET'], subdomain="<subdomain>")
+# def stats(subdomain="<subdomain>"):
+#     subdomain = path + subdomain + '.db'
+#     cur = get_db(subdomain).cursor()
+#     stats = []
+#     for row in cur.execute('SELECT name FROM sqlite_master WHERE type = "table" AND name LIKE "%votes";').fetchall():
+#         stat = []
+#         if cur.execute('SELECT * FROM "{}";'.format(row[0])).fetchall() != None:
+#             for row2 in cur.execute('SELECT * FROM "{}";'.format(row[0])).fetchall():
+#                 stat.append(row2[2])
+#             state = [["Sum", int(sum(stat))], ["Mean", int(statistics.mean(stat))], ["Median", int(statistics.median(stat))], ["Standard Deviation", int(statistics.stdev(stat))]]
+#         stats.append(state)
+#     cur.close()
+#     return render_template('stats.html', stats=stats)
 
 
 @app.route('/privacy/', methods=['POST', 'GET'], subdomain="<subdomain>")
