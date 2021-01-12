@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import statistics
+import datetime
 from flask import Flask, request, render_template, g, send_from_directory
 
 app = Flask(__name__, subdomain_matching=True)
@@ -9,9 +10,13 @@ path = '/var/www/tchoff/tchoff.com/static/databases/'
 
 
 def get_db(DATABASE):
+    ip = request.remote_addr
+    datetime = datetime.datetime.now()
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
+    db.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', ip, datetime)
+    db.commit()
     return db
 
 
