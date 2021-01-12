@@ -10,13 +10,9 @@ path = '/var/www/tchoff/tchoff.com/static/databases/'
 
 
 def get_db(DATABASE):
-    ip = request.remote_addr
-    datetime = datetime.datetime.now()
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
-    db.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', ip, datetime)
-    db.commit()
     return db
 
 
@@ -62,6 +58,8 @@ def year(subdomain=None):
                 table.replace('"', '""'))).fetchall()
             if count[0][0] != None:
                 totalVotes += count[0][0]
+        cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+        get_db(subdomain).commit()
         cur.close()
         return render_template('year.html', data=data, totalVotes=totalVotes)
     else:
@@ -85,6 +83,8 @@ def state(state=None, subdomain=None):
         cur.execute('SELECT * FROM "{}" WHERE vote = ?;'.format(
             stateInfo[0][1] + ".votes".replace('"', '""')), [candidate[1]])
         votes.append([candidate, cur.fetchall()])
+    cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+    get_db(subdomain).commit()
     cur.close()
     return render_template('state.html', state=stateInfo[0][1], votes=votes, abbr=stateInfo[0][3], totalVotes=totalVotes)
 
@@ -100,6 +100,8 @@ def top10(state=None, subdomain=None):
         cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(
             stateInfo[0][1] + ".votes".replace('"', '""')))
         votes = cur.fetchall()
+        cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+        get_db(subdomain).commit()
         cur.close()
         votes = [stateInfo[0][1], votes]
     else:
@@ -111,6 +113,8 @@ def top10(state=None, subdomain=None):
             cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(
                 state[1] + ".votes".replace('"', '""')))
             votes.append([cur.fetchall(), state])
+        cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+        get_db(subdomain).commit()
         cur.close()
         votes = ["50 States and D.C.", votes]
     return render_template('top10.html', votes=votes)
@@ -137,6 +141,8 @@ def electoral(subdomain=None):
         else:
             party = ""
         votes.append([state, vote, party])
+    cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+    get_db(subdomain).commit()
     cur.close()
     return render_template('electoral.html', votes=votes)
 
@@ -155,6 +161,8 @@ def vote(subdomain="<subdomain>"):
     else:
         cur.execute('INSERT INTO "{}" (vote,count) VALUES (?, 1);'.format(
             state + '.votes'.replace('"', '""')), [name])
+    get_db(subdomain).commit()
+    cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
     cur.close()
     return render_template('vote.html', votedFor=name, votedIn=state)
@@ -196,6 +204,8 @@ def vote(subdomain="<subdomain>"):
 #                 stat.append(row2[2])
 #             state = [["Sum", int(sum(stat))], ["Mean", int(statistics.mean(stat))], ["Median", int(statistics.median(stat))], ["Standard Deviation", int(statistics.stdev(stat))]]
 #         stats.append(state)
+#     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+#     get_db(subdomain).commit()
 #     cur.close()
 #     return render_template('stats.html', stats=stats)
 
