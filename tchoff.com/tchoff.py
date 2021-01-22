@@ -88,6 +88,20 @@ def state(state=None, subdomain=None):
     cur.close()
     return render_template('state.html', state=stateInfo[0][1], votes=votes, abbr=stateInfo[0][3], totalVotes=totalVotes)
 
+#questions per state
+@app.route('/q/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
+def qstate(state=None, subdomain=None):
+    subdomain = path + subdomain + '-Questions.db'
+    cur = get_db(subdomain).cursor()
+    cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
+    stateInfo = cur.fetchall()
+    cur.execute('SELECT Questions FROM `Questions`;')
+    questions = cur.fetchall()
+    cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+    get_db(subdomain).commit()
+    cur.close()
+    return render_template('qstate.html', state=stateInfo[0][1], abbr=stateInfo[0][3], questions=questions)
+#end questions per state
 
 @app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
 @app.route('/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")
