@@ -96,7 +96,7 @@ def qstate(state=None, subdomain=None):
     cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
     cur.execute('SELECT * FROM "{}";'.format(
-                state + '.Questions'.replace('"', '""')), [a])
+                stateInfo[0][1] + '.Questions'.replace('"', '""')))
     questions = cur.fetchall()
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()

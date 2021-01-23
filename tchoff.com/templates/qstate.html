@@ -15,7 +15,7 @@
         {% if questions %}
             <form method="POST" action="/q/">
                 <input type="hidden" name="state" value="{{state}}"></input>
-                <tr><th>Question</th><th></th><th>Answer</th></tr>
+                <tr><th>Question</th><th>Answer</th></tr>
             {% for q in questions %}
                 <tr><td>{{ q[1] }}</td><td><input type="radio" name="{{q[0]}}" value="1">Do Want</input><input type="radio" name="{{q[0]}}" value="2" checked>Undecided</input><input type="radio" name="{{q[0]}}" value="3">Don't Want</input></td></tr>
             {% endfor %}
