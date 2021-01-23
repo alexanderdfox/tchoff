@@ -95,12 +95,35 @@ def qstate(state=None, subdomain=None):
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
-    cur.execute('SELECT Questions FROM `Questions`;')
+    cur.execute('SELECT * FROM "{}";'.format(
+                state + '.Questions'.replace('"', '""')), [a])
     questions = cur.fetchall()
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
     cur.close()
-    return render_template('qstate.html', state=stateInfo[0][1], abbr=stateInfo[0][3], questions=questions)
+    return render_template('qstate.html', state=stateInfo[0][1], questions=questions)
+
+@app.route('/q/', methods=['GET', 'POST'], subdomain="<subdomain>")
+def q(state=None, subdomain=None):
+    subdomain = path + subdomain + '-Questions.db'
+    cur = get_db(subdomain).cursor()
+    state = request.form['state']
+    answers = request.form
+    for a in answers:
+        if a != "state":
+            if answers[a] == "1":
+                cur.execute('UPDATE "{}" SET "YES" = "YES" + 1 WHERE id = ?;'.format(
+                state + '.Questions'.replace('"', '""')), [a])
+            elif answers[a] == "3":
+                cur.execute('UPDATE "{}" SET "NO" = "NO" + 1 WHERE id = ?;'.format(
+                state + '.Questions'.replace('"', '""')), [a])
+            elif answers[a] == "2":
+                cur.execute('UPDATE "{}" SET "UNDECIDED" = "UNDECIDED" + 1 WHERE id = ?;'.format(
+                state + '.Questions'.replace('"', '""')), [a])
+    cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
+    get_db(subdomain).commit()
+    cur.close()
+    return render_template('qstate.html', state=state, answers=answers)
 #end questions per state
 
 @app.route('/<state>/top10/', methods=['GET', 'POST'], subdomain="<subdomain>")

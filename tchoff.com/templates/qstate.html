@@ -9,18 +9,23 @@
     <h4><a href="/electoral">Electoral College</a></h4>
     {% if state %}
     <h4><a href="/{{abbr}}/top10">Top 10</a></h4>
+    <h4><a href="/q/{{abbr}}/">Survey</a></h4>
     <h3>{{state}}</h3>
-    <table>
-        <tr><th>Question</th><th></th><th>Votes</th></tr>
-    {% if questions %}
-        {% for q in questions %}
-        <form method="POST" action="/q/">
-            <input type="hidden" name="state" value="{{state}}"></input>
-            <tr><td>{{ q }}</td><td></td></tr>
+        <table>
+        {% if questions %}
+            <form method="POST" action="/q/">
+                <input type="hidden" name="state" value="{{state}}"></input>
+                <tr><th>Question</th><th></th><th>Answer</th></tr>
+            {% for q in questions %}
+                <tr><td>{{ q[1] }}</td><td><input type="radio" name="{{q[0]}}" value="1">Do Want</input><input type="radio" name="{{q[0]}}" value="2" checked>Undecided</input><input type="radio" name="{{q[0]}}" value="3">Don't Want</input></td></tr>
+            {% endfor %}
+            <tr><td><input type="submit" value="Submit All Answers"></input></td></tr>
         </form>
-        {% endfor %}
-    {% endif %}
-    </table>
+        {% endif %}
+        {% if answers %}
+            Thank You.
+        {% endif %}
+        </table>
     {% endif %}
 {% endblock %}
 {% block footer %}{% include "footer.html" %}{% endblock %}
