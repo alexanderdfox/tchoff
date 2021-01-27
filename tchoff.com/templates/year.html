@@ -12,10 +12,10 @@
     Total Votes: {{totalVotes}}
     {% endif %}
     <table>
-    <tr><th>State</th><th>Electoral College</th><th>Abbreviation</th><th>Winning</th></tr>
+    <tr><th>State</th><th>Electoral College</th><th>Survey</th><th>Winning</th></tr>
     {% if data %}
     	{% for d in data %}
-            <tr><td><a href="{{d[0][3]}}/">{{d[0][1]}}</a></td><td>{{d[0][2]}}</td><td>{{d[0][3]}}</td><td>
+            <tr><td><a href="{{d[0][3]}}/">{{d[0][1]}}</a></td><td>{{d[0][2]}}</td><td><a href="/q/{{d[0][3]}}">Survey</a></td><td>
             {% if d[2] %}
                 {{d[2][0][1]}}
             {% endif %}</td></tr>

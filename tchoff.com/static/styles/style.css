@@ -74,9 +74,13 @@ h1, h2, h3 {
 	text-shadow: 3px 2px black;
 }
 path:hover {
-    fill: orange !important;
+	fill: orange !important;
 }
 .footer {
 	position: static;
 	top: 85vmax;
+}
+.question {
+	font: 100px black;
+	text-align: center;
 }
