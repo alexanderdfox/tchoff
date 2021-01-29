@@ -80,8 +80,12 @@ def state(state=None, subdomain=None):
 def district(state=None, district=None, subdomain=None):
     subdomain = path + subdomain + '.db'
     cur = get_db(subdomain).cursor()
-    cur.execute('SELECT * FROM `candidates` WHERE district = ? ORDER BY name ASC;', [district])
-    candidates = cur.fetchall()
+    if district != "PRESIDENT":
+        cur.execute('SELECT * FROM `candidates` WHERE district = ? AND state = ? ORDER BY name ASC;', [district, state])
+        candidates = cur.fetchall()
+    else:
+        cur.execute('SELECT * FROM `candidates` WHERE district = ? ORDER BY name ASC;', ['PRESIDENT'])
+        candidates = cur.fetchall()
     cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
     cur.execute(
