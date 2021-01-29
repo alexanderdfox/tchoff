@@ -65,12 +65,22 @@ def year(subdomain=None):
     else:
         return render_template('index.html')
 
-
 @app.route('/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def state(state=None, subdomain=None):
     subdomain = path + subdomain + '.db'
     cur = get_db(subdomain).cursor()
-    cur.execute('SELECT * FROM `candidates` ORDER BY name ASC;')
+    cur.execute('SELECT DISTINCT district FROM `candidates` WHERE state = ?;', [state])
+    districts = cur.fetchall()
+    districts.append(['PRESIDENT'])
+    get_db(subdomain).commit()
+    cur.close()
+    return render_template('state.html', state=state, districts=districts)
+
+@app.route('/<state>/<district>/', methods=['GET', 'POST'], subdomain="<subdomain>")
+def district(state=None, district=None, subdomain=None):
+    subdomain = path + subdomain + '.db'
+    cur = get_db(subdomain).cursor()
+    cur.execute('SELECT * FROM `candidates` WHERE district = ? ORDER BY name ASC;', [district])
     candidates = cur.fetchall()
     cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
@@ -86,7 +96,7 @@ def state(state=None, subdomain=None):
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
     cur.close()
-    return render_template('state.html', state=stateInfo[0][1], votes=votes, abbr=stateInfo[0][3], totalVotes=totalVotes)
+    return render_template('district.html', state=stateInfo[0][1], votes=votes, totalVotes=totalVotes)
 
 #questions per state
 @app.route('/q/<state>/', methods=['GET', 'POST'], subdomain="<subdomain>")
@@ -101,7 +111,7 @@ def qstate(state=None, subdomain=None):
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
     cur.close()
-    return render_template('qstate.html', state=stateInfo[0][1], questions=questions)
+    return render_template('qstate.html', state=stateInfo[0][1], questions=questions,)
 
 @app.route('/q/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def q(state=None, subdomain=None):

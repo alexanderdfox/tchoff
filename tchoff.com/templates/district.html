@@ -8,17 +8,20 @@
     <h4><a href="/">Tchoff.com</a></h4>
     <h4><a href="/electoral">Electoral College</a></h4>
     {% if state %}
-    <h4><a href="/{{abbr}}/top10">Top 10</a></h4>
-    <h4><a href="/q/{{abbr}}/">Survey</a></h4>
+    <h4><a href="/{{state}}/top10">Top 10</a></h4>
+    <h4><a href="/q/{{state}}/">Survey</a></h4>
     <h3>{{state}}</h3>
     {% if totalVotes %}
     Total Votes: {{totalVotes}}
     {% endif %}
     <table>
-        <tr><th>District</th></tr>
-    {% if districts %}
-        {% for d in districts %}
-            <tr><td><a href="/{{state}}/{{d[0]}}/">{{d[0]}}</a></td></tr>
+        <tr><th>Candidate</th><th>Party</th><th>Votes</th></tr>
+    {% if votes %}
+        {% for v in votes %}
+        <form method="POST" action="/vote/">
+            <input type="hidden" name="state" value="{{state}}"></input>
+            <tr><td><button type="submit" name="name" value="{{v[0][1]}}">{{v[0][1] | safe}}</button></td><td>{{v[0][2]}}</td><td>{% if v[1][0] %}{{v[1][0][2]}}{% else %}0{% endif %}</td></tr>
+        </form>
         {% endfor %}
     {% endif %}
     </table>
