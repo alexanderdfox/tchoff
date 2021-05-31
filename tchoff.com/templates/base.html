@@ -13,11 +13,12 @@
     {% endblock %}
 </head>
 <body>
+    <img src="{{ url_for('static',filename='images/qrcode.png') }}" width="10%" height="10%">
+    <p>Pay a dollar for 10 years access!</p>
+    <p>Upgrades will come after I get the first 100 users!</p>
+    <p>I need the money for extra programmers.</p>
+    <p>Code: https://github.com/alex-d-fox/tchoff/</p>
     {% block content %}{% endblock %}
     {% block footer %}{% include "footer.html" %}{% endblock %}
-    <br><a href="https://paypal.me/alexthefox">Pay minimum of $1 Per person per year for updates. To help Parler and Tchoff</a>
-    <br><a href="https://whois.com/whois/xxx.xxx">Amazon Host Porn Sites</a>
-    <br><a href="https://www.parler.com">but not Parler</a>
-    <br><a href="https://youtu.be/8r34xgH2ZLMo">Mr. Biden tear down that wall.</a>
 </body>
 </html>

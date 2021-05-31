@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Easter Egg - Decipher{% endblock %}
+{% block content %}
+	<p>Plain Text Cipher -- each "shape and color" combination is a number between 1 and 256.</p>
+	<p>Figure Out the Story</p>
+	<img src="{{ url_for('static', _scheme='https', _external=True, filename='images/Story.svg') }}"/>
+{% endblock %}

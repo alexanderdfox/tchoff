@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Fox{% endblock %}
+{% block content %}
+	<img src="{{ url_for('static', _scheme='https', _external=True, filename='images/Fox.svg') }}"/>
+{% endblock %}
