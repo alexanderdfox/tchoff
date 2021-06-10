@@ -2,7 +2,10 @@ import sqlite3
 import os
 import statistics
 import datetime
+import secure
 from flask import Flask, request, render_template, g, send_from_directory
+
+secure_headers = secure.Secure()
 
 app = Flask(__name__, subdomain_matching=True)
 app.config['SERVER_NAME'] = "tchoff.com"
@@ -15,13 +18,16 @@ def get_db(DATABASE):
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
+@app.after_request
+def set_secure_headers(response):
+    secure_headers.framework.flask(response)
+    return response
 
 @app.teardown_appcontext
 def close(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-
 
 @app.route('/static/<path:filename>')
 def serve_databases(filename):
@@ -33,6 +39,13 @@ def serve_databases(filename):
 def index():
     return render_template('index.html')
 
+@app.route('/fox/', methods=['GET', 'POST'])
+def fox():
+    return render_template('fox.html')
+
+@app.route('/egg/', methods=['GET', 'POST'])
+def egg():
+    return render_template('easter.html')
 
 @app.route('/', methods=['GET', 'POST'], subdomain="<subdomain>")
 def year(subdomain=None):
