@@ -1,2 +1,2 @@
 # tchoff
-tchoff.com written in python
+https://www.tchoff.com/ written in python
