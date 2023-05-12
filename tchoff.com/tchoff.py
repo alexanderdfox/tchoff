@@ -139,14 +139,20 @@ def q(state=None, subdomain=None):
     for a in answers:
         if a != "state":
             if answers[a] == "1":
-                cur.execute('UPDATE "{}" SET "YES" = "YES" + 1 WHERE id = ?;'.format(
-                state + '.Questions'.replace('"', '""')), [a])
+                table_name = state + '.Questions'
+                escaped_table_name = table_name.replace('"', '""')
+                query = 'UPDATE "{}" SET "YES" = "YES" + 1 WHERE id = ?;'.format(escaped_table_name)
+                cur.execute(query, [a])
             elif answers[a] == "3":
-                cur.execute('UPDATE "{}" SET "NO" = "NO" + 1 WHERE id = ?;'.format(
-                state + '.Questions'.replace('"', '""')), [a])
+                table_name = state + '.Questions'
+                escaped_table_name = table_name.replace('"', '""')
+                query = 'UPDATE "{}" SET "NO" = "NO" + 1 WHERE id = ?;'.format(escaped_table_name)
+                cur.execute(query, [a])
             elif answers[a] == "2":
-                cur.execute('UPDATE "{}" SET "UNDECIDED" = "UNDECIDED" + 1 WHERE id = ?;'.format(
-                state + '.Questions'.replace('"', '""')), [a])
+                table_name = state + '.Questions'
+                escaped_table_name = table_name.replace('"', '""')
+                query = 'UPDATE "{}" SET "UNDECIDED" = "UNDECIDED" + 1 WHERE id = ?;'.format(escaped_table_name)
+                cur.execute(query, [a])
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
     cur.close()
@@ -161,8 +167,10 @@ def top10(state=None, subdomain=None):
         cur = get_db(subdomain).cursor()
         cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
         stateInfo = cur.fetchall()
-        cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(
-            stateInfo[0][1] + ".votes".replace('"', '""')))
+        table_name = stateInfo[0][1] + ".votes"
+        escaped_table_name = table_name.replace('"', '""')
+        query = 'SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(escaped_table_name)
+        cur.execute(query)
         votes = cur.fetchall()
         cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
         get_db(subdomain).commit()
@@ -174,8 +182,10 @@ def top10(state=None, subdomain=None):
         states = cur.fetchall()
         votes = []
         for state in states:
-            cur.execute('SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(
-                state[1] + ".votes".replace('"', '""')))
+            table_name = state[1] + ".votes"
+            escaped_table_name = table_name.replace('"', '""')
+            query = 'SELECT * FROM "{}" ORDER BY count DESC LIMIT 10;'.format(escaped_table_name)
+            cur.execute(query)
             votes.append([cur.fetchall(), state])
         cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
         get_db(subdomain).commit()
@@ -217,29 +227,34 @@ def vote(subdomain="<subdomain>"):
     name = request.form['name']
     state = request.form['state']
     cur = get_db(subdomain).cursor()
-    cur.execute('SELECT * FROM "{}" WHERE vote = ?;'.format(
-        state + '.votes'.replace('"', '""')), [name])
+    table_name = state + '.votes'
+    escaped_table_name = table_name.replace('"', '""')
+    query = 'SELECT * FROM "{}" WHERE vote = ?;'.format(escaped_table_name)
+    cur.execute(query, [name])
     if cur.fetchall():
-        cur.execute('UPDATE "{}" SET count = count + 1 WHERE vote = ?;'.format(
-            state + '.votes'.replace('"', '""')), [name])
+        table_name = state + '.votes'
+        escaped_table_name = table_name.replace('"', '""')
+        query = 'UPDATE "{}" SET count = count + 1 WHERE vote = ?;'.format(escaped_table_name)
+        cur.execute(query, [name])
     else:
-        cur.execute('INSERT INTO "{}" (vote,count) VALUES (?, 1);'.format(
-            state + '.votes'.replace('"', '""')), [name])
+        table_name = state + '.votes'
+        escaped_table_name = table_name.replace('"', '""')
+        query = 'INSERT INTO "{}" (vote,count) VALUES (?, 1);'.format(escaped_table_name)
+        cur.execute(query, [name])
     get_db(subdomain).commit()
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
     cur.close()
     return render_template('vote.html', votedFor=name, votedIn=state)
 
-
-# BROKEN!
+#testing
 # @app.route('/winning/', methods=['GET', 'POST'], subdomain="<subdomain>")
 # def winning(subdomain="<subdomain>"):
-#     subdomain = path + subdomain + '.db'
+#     subdomain = subdomain + '.db'
 #     cur = get_db(subdomain).cursor()
-#     cur.execute('SELECT * FROM `candidates`;')
+#     cur.execute('SELECT * FROM "candidates";')
 #     candidates = cur.fetchall()
-#     cur.execute('SELECT * FROM `states` ORDER BY state ASC;')
+#     cur.execute('SELECT * FROM "states" ORDER BY state ASC;')
 #     states = cur.fetchall()
 #     electoral = []
 #     for state in states:
@@ -254,20 +269,20 @@ def vote(subdomain="<subdomain>"):
 #             electoral.append([candidate, count, elec, state])
 #     electoral.sort(key=lambda x: x[1], reverse=True)
 #     return render_template('winning.html', electoral=electoral)
-# BROKEN!
 
 # @app.route('/stats/', methods=['POST', 'GET'], subdomain="<subdomain>")
 # def stats(subdomain="<subdomain>"):
-#     subdomain = path + subdomain + '.db'
+#     subdomain = subdomain + '.db'
 #     cur = get_db(subdomain).cursor()
 #     stats = []
 #     for row in cur.execute('SELECT name FROM sqlite_master WHERE type = "table" AND name LIKE "%votes";').fetchall():
 #         stat = []
-#         if cur.execute('SELECT * FROM "{}";'.format(row[0])).fetchall() != None:
+#         state = []
+#         if cur.execute('SELECT * FROM "{}";'.format(row[0])).fetchall():
 #             for row2 in cur.execute('SELECT * FROM "{}";'.format(row[0])).fetchall():
 #                 stat.append(row2[2])
 #             state = [["Sum", int(sum(stat))], ["Mean", int(statistics.mean(stat))], ["Median", int(statistics.median(stat))], ["Standard Deviation", int(statistics.stdev(stat))]]
-#         stats.append(state)
+#             stats.append(state)
 #     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
 #     get_db(subdomain).commit()
 #     cur.close()
