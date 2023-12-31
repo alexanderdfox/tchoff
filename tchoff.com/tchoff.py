@@ -58,17 +58,17 @@ def year(subdomain=None):
         totalVotes = 0
         for state in states:
             table = state[1] + ".votes"
-            cur.execute(
+            cur.execute(html.escape(
                 'SELECT * FROM "{}" ORDER BY vote ASC;'
-                .format(table.replace('"', '""')))
+                .format(table.replace('"', '""'))))
             vote = cur.fetchall()
-            cur.execute(
+            cur.execute(html.escape(
                 'SELECT * FROM "{}" ORDER BY count DESC LIMIT 1;'
-                .format(table.replace('"', '""')))
+                .format(table.replace('"', '""'))))
             winner = cur.fetchall()
             data.append([state, vote, winner])
-            count = cur.execute('SELECT sum(count) FROM "{}";'.format(
-                table.replace('"', '""'))).fetchall()
+            count = cur.execute(html.escape('SELECT sum(count) FROM "{}";'.format(
+                table.replace('"', '""')))).fetchall()
             if count[0][0] != None:
                 totalVotes += count[0][0]
         cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
@@ -122,8 +122,8 @@ def qstate(state=None, subdomain=None):
     cur = get_db(subdomain).cursor()
     cur.execute('SELECT * FROM `states` WHERE abbr = ?;', [state])
     stateInfo = cur.fetchall()
-    cur.execute('SELECT * FROM "{}";'.format(
-                stateInfo[0][1] + '.Questions'.replace('"', '""')))
+    cur.execute(html.escape('SELECT * FROM "{}";'.format(
+                stateInfo[0][1] + '.Questions'.replace('"', '""'))))
     questions = cur.fetchall()
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
@@ -142,17 +142,17 @@ def q(state=None, subdomain=None):
                 table_name = state + '.Questions'
                 escaped_table_name = table_name.replace('"', '""')
                 query = 'UPDATE "{}" SET "YES" = "YES" + 1 WHERE id = ?;'.format(escaped_table_name)
-                cur.execute(query, [a])
+                cur.execute(html.escape(query), [a])
             elif answers[a] == "3":
                 table_name = state + '.Questions'
                 escaped_table_name = table_name.replace('"', '""')
                 query = 'UPDATE "{}" SET "NO" = "NO" + 1 WHERE id = ?;'.format(escaped_table_name)
-                cur.execute(query, [a])
+                cur.execute(html.escape(query), [a])
             elif answers[a] == "2":
                 table_name = state + '.Questions'
                 escaped_table_name = table_name.replace('"', '""')
                 query = 'UPDATE "{}" SET "UNDECIDED" = "UNDECIDED" + 1 WHERE id = ?;'.format(escaped_table_name)
-                cur.execute(query, [a])
+                cur.execute(html.escape(query), [a])
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
     cur.close()
@@ -230,17 +230,17 @@ def vote(subdomain="<subdomain>"):
     table_name = state + '.votes'
     escaped_table_name = table_name.replace('"', '""')
     query = 'SELECT * FROM "{}" WHERE vote = ?;'.format(escaped_table_name)
-    cur.execute(query, [name])
+    cur.execute(html.escape(query), [name])
     if cur.fetchall():
         table_name = state + '.votes'
         escaped_table_name = table_name.replace('"', '""')
         query = 'UPDATE "{}" SET count = count + 1 WHERE vote = ?;'.format(escaped_table_name)
-        cur.execute(query, [name])
+        cur.execute(html.escape(query), [name])
     else:
         table_name = state + '.votes'
         escaped_table_name = table_name.replace('"', '""')
         query = 'INSERT INTO "{}" (vote,count) VALUES (?, 1);'.format(escaped_table_name)
-        cur.execute(query, [name])
+        cur.execute(html.escape(query), [name])
     get_db(subdomain).commit()
     cur.execute('INSERT INTO "ip_log" (ip,datetime) VALUES (?, ?);', [request.remote_addr, datetime.datetime.now()])
     get_db(subdomain).commit()
